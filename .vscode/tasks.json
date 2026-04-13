@@ -1,0 +1,15 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Launch iOS Simulator",
+      "type": "shell",
+      "command": "open -a Simulator && xcrun simctl boot \"iPhone 17\" >/dev/null 2>&1 || true; for i in {1..30}; do xcrun simctl list devices booted | grep -q \"Booted\" && exit 0; sleep 1; done; echo \"iOS simulator not ready\"; exit 1",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "never",
+        "panel": "shared"
+      }
+    }
+  ]
+}

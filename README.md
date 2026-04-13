@@ -51,6 +51,16 @@ flutter pub get
 flutter run
 ```
 
+## First login on mobile
+
+The app now shows a login screen on first launch and stores session locally.
+
+- Default dev account from backend seed:
+  - Email: `seed@filmedme.app`
+  - Password: `Password123!`
+- If session already exists, app opens directly to main tabs
+- Use top-right logout button in app to clear session and login again
+
 ## Run and Debug (VS Code)
 
 Open folder `/Users/nookthawat/Project/filmedme` in VS Code, then go to `Run and Debug`.
@@ -59,6 +69,5 @@ Use one of these launch profiles:
 
 - `Flutter (Current Device)`
 - `Flutter (Android Emulator)`
-- `Flutter (iOS Simulator)`
-- `Full Stack (Android Emulator)` (backend + app)
-- `Full Stack (iOS Simulator)` (backend + app)
+- `Flutter (iOS Auto)`
+- `Backend API (NodeTS)` (run separately when needed)

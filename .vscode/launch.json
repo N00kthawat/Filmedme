@@ -1,0 +1,48 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Flutter (Android Emulator)",
+      "type": "dart",
+      "request": "launch",
+      "program": "lib/main.dart",
+      "deviceId": "android"
+    },
+    {
+      "name": "Flutter (iOS Simulator)",
+      "type": "dart",
+      "request": "launch",
+      "program": "lib/main.dart",
+      "deviceId": "2FD52349-FAE7-4506-872A-0894ECD9203E"
+    },
+    {
+      "name": "Flutter (Current Device)",
+      "type": "dart",
+      "request": "launch",
+      "program": "lib/main.dart"
+    },
+    {
+      "name": "Backend API (NodeTS)",
+      "type": "node",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/../filmedme-backend/SaaS-Stack/Backend/NodeJS/filmedme-api",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev"],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "skipFiles": ["<node_internals>/**"]
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Full Stack (Android Emulator)",
+      "configurations": ["Backend API (NodeTS)", "Flutter (Android Emulator)"],
+      "stopAll": true
+    },
+    {
+      "name": "Full Stack (iOS Simulator)",
+      "configurations": ["Backend API (NodeTS)", "Flutter (iOS Simulator)"],
+      "stopAll": true
+    }
+  ]
+}

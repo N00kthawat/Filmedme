@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../app/theme.dart';
-import '../../core/widgets/app_top_bar.dart';
+import '../../core/widgets/app_fab.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -9,506 +9,466 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).extension<AppColors>()!;
-    return DefaultTabController(
-      length: 2,
-      child: DecoratedBox(
-        decoration: BoxDecoration(color: colors.bg),
-        child: SafeArea(
-          child: CustomScrollView(
-            slivers: [
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(12, 10, 12, 36),
-                sliver: SliverList(
-                  delegate: SliverChildListDelegate([
-                    const AppTopBar(),
-                    const SizedBox(height: 20),
-                    const _DiscoverHeader(),
-                    const SizedBox(height: 14),
-                    const _HeroSection(),
-                    const SizedBox(height: 16),
-                    const _FeatureSection(),
-                    const SizedBox(height: 16),
-                    const _SeriesSection(),
-                    const SizedBox(height: 16),
-                    const _TileRow(),
-                    const SizedBox(height: 38),
-                    Center(
-                      child: Text(
-                        'END OF ARCHIVE',
-                        style: TextStyle(
-                          color: colors.muted,
-                          letterSpacing: 3.5,
-                          fontSize: 10,
+    return ColoredBox(
+      color: colors.bg,
+      child: SafeArea(
+        child: Stack(
+          children: [
+            CustomScrollView(
+              slivers: [
+                SliverAppBar(
+                  automaticallyImplyLeading: false,
+                  backgroundColor: colors.bg,
+                  pinned: true,
+                  floating: true,
+                  titleSpacing: 0,
+                  title: Row(
+                    children: [
+                      IconButton(
+                        onPressed: () => Scaffold.of(context).openDrawer(),
+                        icon: Icon(Icons.menu, color: colors.ink),
+                      ),
+                      Expanded(
+                        child: Center(
+                          child: Text(
+                            'ค้นพบ',
+                            style: TextStyle(
+                              color: colors.ink,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 18,
+                            ),
+                          ),
                         ),
                       ),
+                      IconButton(
+                        onPressed: () {},
+                        icon: Icon(Icons.search, color: colors.ink),
+                      ),
+                    ],
+                  ),
+                ),
+                SliverList(
+                  delegate: SliverChildListDelegate([
+                    const SizedBox(height: 16),
+                    const _FavoritesPromo(),
+                    const SizedBox(height: 32),
+                    const _HashtagMosaic(
+                      title: '#PhotographersInFrame',
+                      count: '209',
                     ),
+                    const SizedBox(height: 32),
+                    const _HashtagMosaic(
+                      title: '#MyVision',
+                      count: '1,033',
+                      variant: MosaicVariant.threeGrid,
+                    ),
+                    const SizedBox(height: 48),
+                    const _CuratedList(
+                      title: 'เลือกสรร',
+                      subtitle: 'คัดสรรโดย VSCO',
+                      layoutStrategy: ListLayoutStrategy.portrait,
+                    ),
+                    const SizedBox(height: 32),
+                    const _CuratedList(
+                      title: 'บทบรรณาธิการ',
+                      subtitle: 'ไฮไลต์ที่ VSCO และชุมชนผู้ใช้งาน',
+                      layoutStrategy: ListLayoutStrategy.landscapeWithText,
+                    ),
+                    const SizedBox(height: 32),
+                    const _CuratedList(
+                      title: 'แสงอาทิตย์และร่มเงา',
+                      subtitle: 'แสงและเงาที่ต่างกัน',
+                      layoutStrategy: ListLayoutStrategy.square,
+                    ),
+                    const SizedBox(height: 32),
+                    const _CuratedList(
+                      title: 'ความปรารถนาที่จะเดินทาง',
+                      subtitle: 'สำหรับนักผจญภัย',
+                      layoutStrategy: ListLayoutStrategy.square,
+                    ),
+                    const SizedBox(height: 120), // Padding for bottom
                   ]),
+                ),
+              ],
+            ),
+            Positioned(
+              bottom: 16,
+              right: 8,
+              child: const AppFab(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _FavoritesPromo extends StatefulWidget {
+  const _FavoritesPromo();
+
+  @override
+  State<_FavoritesPromo> createState() => _FavoritesPromoState();
+}
+
+class _FavoritesPromoState extends State<_FavoritesPromo> {
+  bool _isVisible = true;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_isVisible) return const SizedBox.shrink();
+    final colors = Theme.of(context).extension<AppColors>()!;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: Border.all(color: colors.ink, width: 1.5),
+                ),
+                child: Icon(Icons.star_border, color: colors.ink),
+              ),
+              IconButton(
+                onPressed: () => setState(() => _isVisible = false),
+                icon: Icon(Icons.close, color: colors.muted, size: 20),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'รูปภาพโปรดที่สร้างแรงบันดาลใจ',
+            style: TextStyle(
+              color: colors.ink,
+              fontSize: 22,
+              fontWeight: FontWeight.w700,
+              height: 1.2,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'กดรูปภาพค้างไว้แล้วแตะที่ไอคอนรูปดาว ฟังก์ชั่นรูปภาพ\nโปรดจะช่วยปรับแต่งสิ่งที่คุณเห็นตรงนี้',
+            style: TextStyle(
+              color: colors.ink,
+              fontSize: 14,
+              height: 1.4,
+            ),
+          ),
+          const SizedBox(height: 24),
+          Container(
+            height: 1,
+            color: colors.line,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+enum MosaicVariant { overlapping, threeGrid }
+
+class _HashtagMosaic extends StatelessWidget {
+  final String title;
+  final String count;
+  final MosaicVariant variant;
+
+  const _HashtagMosaic({
+    required this.title,
+    required this.count,
+    this.variant = MosaicVariant.overlapping,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).extension<AppColors>()!;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          height: 280,
+          child: variant == MosaicVariant.overlapping
+              ? _buildOverlappingMosaic()
+              : _buildThreeGridMosaic(),
+        ),
+        const SizedBox(height: 16),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                title,
+                style: TextStyle(
+                  color: colors.ink,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              Text(
+                '$count โพสต์',
+                style: TextStyle(
+                  color: colors.muted,
+                  fontSize: 13,
                 ),
               ),
             ],
           ),
         ),
+      ],
+    );
+  }
+
+  Widget _buildOverlappingMosaic() {
+    return Stack(
+      children: [
+        Positioned(
+          left: 16,
+          bottom: 24,
+          top: 0,
+          width: 140,
+          child: _NetworkImageMock(seed: '${title}_1'),
+        ),
+        Positioned(
+          left: 170,
+          top: 40,
+          width: 110,
+          height: 90,
+          child: _NetworkImageMock(seed: '${title}_2'),
+        ),
+        Positioned(
+          left: 160,
+          bottom: 12,
+          width: 130,
+          height: 120,
+          child: _NetworkImageMock(seed: '${title}_3'),
+        ),
+        Positioned(
+          right: -20,
+          top: 80,
+          width: 140,
+          height: 180,
+          child: _NetworkImageMock(seed: '${title}_4'),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildThreeGridMosaic() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Expanded(
+            flex: 2,
+            child: SizedBox(
+              height: 180,
+              child: _NetworkImageMock(seed: '${title}_a'),
+            ),
+          ),
+          const SizedBox(width: 4),
+          Expanded(
+            flex: 2,
+            child: SizedBox(
+              height: 180,
+              child: _NetworkImageMock(seed: '${title}_b'),
+            ),
+          ),
+          const SizedBox(width: 4),
+          Expanded(
+            flex: 3,
+            child: SizedBox(
+              height: 240,
+              child: _NetworkImageMock(seed: '${title}_c'),
+            ),
+          ),
+        ],
       ),
     );
   }
 }
 
+enum ListLayoutStrategy { portrait, landscapeWithText, square }
 
+class _CuratedList extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final ListLayoutStrategy layoutStrategy;
 
-class _DiscoverHeader extends StatelessWidget {
-  const _DiscoverHeader();
+  const _CuratedList({
+    required this.title,
+    required this.subtitle,
+    required this.layoutStrategy,
+  });
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).extension<AppColors>()!;
-    return Padding(
-      padding: const EdgeInsets.only(left: 2),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'CURATED FEED',
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Text(
+            title,
+            style: TextStyle(
+              color: colors.ink,
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+        const SizedBox(height: 2),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Text(
+            subtitle,
             style: TextStyle(
               color: colors.muted,
-              letterSpacing: 2.8,
-              fontSize: 10,
-              fontWeight: FontWeight.w500,
+              fontSize: 13,
             ),
           ),
-          SizedBox(height: 4),
-          FittedBox(
-            fit: BoxFit.scaleDown,
-            alignment: Alignment.centerLeft,
+        ),
+        const SizedBox(height: 16),
+        SizedBox(
+          height: layoutStrategy == ListLayoutStrategy.landscapeWithText
+              ? 300
+              : 320,
+          child: ListView.separated(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            scrollDirection: Axis.horizontal,
+            itemCount: 4,
+            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            itemBuilder: (context, index) {
+              return _buildItem(context, colors, index);
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildItem(BuildContext context, AppColors colors, int index) {
+    double width, height;
+    if (layoutStrategy == ListLayoutStrategy.landscapeWithText) {
+      width = 300;
+      height = 180;
+    } else if (layoutStrategy == ListLayoutStrategy.portrait) {
+      width = 200;
+      height = 250;
+    } else {
+      width = 210;
+      height = 210;
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: width,
+          height: height,
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: _NetworkImageMock(seed: '${title}_$index'),
+              ),
+              if (layoutStrategy == ListLayoutStrategy.landscapeWithText)
+                Positioned(
+                  right: 12,
+                  bottom: 12,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    color: Colors.black.withValues(alpha: 0.5),
+                    child: const Icon(Icons.layers, color: Colors.white, size: 20),
+                  ),
+                ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        if (layoutStrategy == ListLayoutStrategy.landscapeWithText) ...[
+          SizedBox(
+            width: width,
             child: Text(
-              'DISCOVER',
+              'What 401 Photographers Actually Thin...',
               style: TextStyle(
                 color: colors.ink,
-                fontSize: 58,
-                height: 0.94,
-                letterSpacing: -1.8,
-                fontWeight: FontWeight.w900,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
               ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _HeroSection extends StatelessWidget {
-  const _HeroSection();
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColors>()!;
-    return Container(
-      decoration: BoxDecoration(
-        color: colors.surface,
-        border: Border.all(color: colors.line),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            height: 248,
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xFF0B0D10), Color(0xFFB8BBC2), Color(0xFF2C2E33)],
-              ),
-            ),
-            child: Stack(
-              children: [
-                Positioned.fill(
-                  child: DecoratedBox(
-                    decoration: BoxDecoration(
-                      gradient: RadialGradient(
-                        center: const Alignment(0, 0.55),
-                        radius: 0.9,
-                        colors: [
-                          Colors.white.withValues(alpha: 0.24),
-                          Colors.black.withValues(alpha: 0.78),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  left: -22,
-                  right: -22,
-                  bottom: -2,
-                  child: Transform.rotate(
-                    angle: -0.05,
-                    child: Container(height: 46, color: Colors.white.withValues(alpha: 0.72)),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 12, 12, 12),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'CREATOR',
-                        style: TextStyle(
-                          color: colors.muted,
-                          letterSpacing: 1.4,
-                          fontSize: 10,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        'ELIAS VANCE',
-                        style: TextStyle(
-                          color: colors.ink,
-                          fontWeight: FontWeight.w800,
-                          fontSize: 30,
-                          height: 0.95,
-                          letterSpacing: -0.6,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        '35MM - F/2.8 - 1/500',
-                        style: TextStyle(
-                          color: colors.muted,
-                          letterSpacing: 1.4,
-                          fontSize: 9,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                OutlinedButton.icon(
-                  onPressed: () {},
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: colors.ink,
-                    side: BorderSide(color: colors.line),
-                    shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-                    minimumSize: const Size(118, 42),
-                  ),
-                  icon: const Icon(Icons.bookmark, size: 14),
-                  label: const Text(
-                    'COLLECT',
-                    style: TextStyle(letterSpacing: 1.3, fontSize: 11),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _FeatureSection extends StatelessWidget {
-  const _FeatureSection();
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColors>()!;
-    return Container(
-      decoration: BoxDecoration(
-        color: colors.surface,
-        border: Border.all(color: colors.line),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            height: 210,
-            color: const Color(0xFFCDCED0),
-            child: Stack(
-              children: [
-                Positioned(left: 0, top: 16, child: Container(width: 130, height: 180, color: const Color(0xFFB9BABD))),
-                Positioned(left: 118, top: 28, child: Container(width: 140, height: 166, color: const Color(0xFFADAFB3))),
-                Positioned(left: 234, top: 12, child: Container(width: 128, height: 176, color: const Color(0xFFC7C9CC))),
-                Positioned(
-                  left: 86,
-                  top: 68,
-                  child: Container(
-                    width: 62,
-                    height: 74,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.9),
-                      border: Border.all(color: const Color(0xFF9D9FA4), width: 4),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 10, 12, 12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        'CREATOR\nSARA HOLM',
-                        style: TextStyle(
-                          color: colors.ink,
-                          fontWeight: FontWeight.w700,
-                          height: 1.18,
-                          letterSpacing: 0.6,
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 32,
-                      height: 32,
-                      child: OutlinedButton(
-                        onPressed: () {},
-                        style: OutlinedButton.styleFrom(
-                          padding: EdgeInsets.zero,
-                          side: BorderSide(color: colors.line),
-                          shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-                        ),
-                        child: Icon(Icons.star, size: 13, color: colors.ink),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'STRUCTURAL\nSILENCE',
-                  style: TextStyle(
-                    color: colors.ink,
-                    fontSize: 34,
-                    height: 0.9,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: -1.2,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Exploring the intersection of brutalist architecture and the fleeting nature of morning light. Shot on location in Berlin.',
-                  style: TextStyle(
-                    color: colors.muted,
-                    height: 1.4,
-                    fontSize: 11,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Container(height: 1, width: 112, color: colors.line),
-                const SizedBox(height: 7),
-                Text(
-                  'ISO 100 - 50MM - NO FILTER',
-                  style: TextStyle(
-                    color: colors.muted,
-                    letterSpacing: 1.2,
-                    fontSize: 9,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _SeriesSection extends StatelessWidget {
-  const _SeriesSection();
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColors>()!;
-    return Container(
-      decoration: BoxDecoration(
-        color: colors.surface,
-        border: Border.all(color: colors.line),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            height: 236,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  const Color(0xFF292A2E),
-                  const Color(0xFF111216),
-                  Colors.black.withValues(alpha: 0.9),
-                ],
-              ),
-            ),
-            child: Stack(
-              children: [
-                ...List.generate(
-                  8,
-                  (index) => Positioned(
-                    left: 16 + (index * 28),
-                    top: 0,
-                    bottom: 0,
-                    child: Container(
-                      width: 12,
-                      color: Colors.white.withValues(alpha: 0.03 * (index.isEven ? 1 : 2)),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 10, 12, 0),
+          const SizedBox(height: 4),
+          SizedBox(
+            width: width,
             child: Text(
-              'FEATURED SERIES',
+              'A data-backed look at how the photo communit...',
               style: TextStyle(
                 color: colors.muted,
-                letterSpacing: 1.7,
-                fontSize: 10,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 4, 12, 0),
-            child: Text(
-              'THE FARTHEST\nREACH',
-              style: TextStyle(
-                color: colors.ink,
-                fontSize: 43,
-                height: 0.9,
-                fontWeight: FontWeight.w900,
-                letterSpacing: -1.6,
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 4, 12, 12),
-            child: Text(
-              'BY MARCUS THORNE',
-              style: TextStyle(
-                color: colors.ink,
-                letterSpacing: 1.6,
                 fontSize: 12,
               ),
-            ),
-          ),
-          Center(
-            child: OutlinedButton(
-              onPressed: () {},
-              style: OutlinedButton.styleFrom(
-                foregroundColor: colors.ink,
-                side: BorderSide(color: colors.line),
-                shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
-                minimumSize: const Size(134, 40),
-              ),
-              child: const Text(
-                'VIEW ARCHIVE',
-                style: TextStyle(letterSpacing: 1.3, fontSize: 11),
-              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
           const SizedBox(height: 12),
         ],
-      ),
+        Row(
+          children: [
+            Container(
+              width: 24,
+              height: 24,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: colors.line,
+              ),
+              child: Icon(Icons.person, size: 14, color: colors.ink),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              layoutStrategy == ListLayoutStrategy.landscapeWithText ? 'VSCO' : 'user_$index',
+              style: TextStyle(
+                color: colors.ink,
+                fontSize: 13,
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
 
-class _TileRow extends StatelessWidget {
-  const _TileRow();
+class _NetworkImageMock extends StatelessWidget {
+  final String seed;
+
+  const _NetworkImageMock({required this.seed});
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColors>()!;
-    return Row(
-      children: [
-        Expanded(
-          child: Container(
-            height: 166,
-            decoration: BoxDecoration(
-              border: Border.all(color: colors.line),
-              gradient: const LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [Color(0xFF3A3C44), Color(0xFF0D0F14)],
-              ),
-            ),
-            child: Stack(
-              children: [
-                Positioned(
-                  left: 8,
-                  bottom: 8,
-                  child: Text(
-                    'A. LYRA JONES',
-                    style: TextStyle(
-                      color: colors.ink,
-                      letterSpacing: 1.2,
-                      fontSize: 9,
-                    ),
-                  ),
-                ),
-                Positioned(
-                  right: 8,
-                  bottom: 8,
-                  child: Icon(Icons.star, size: 12, color: Colors.white.withValues(alpha: 0.82)),
-                ),
-              ],
-            ),
+    // We use a simple network image with robust error handling for placeholders.
+    // picsum.photos provides consistent random images based on a seed.
+    return Image.network(
+      'https://picsum.photos/seed/${seed.hashCode}/400/600',
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) {
+        return Container(
+          color: const Color(0xFF333333),
+          child: const Center(
+            child: Icon(Icons.camera_alt, color: Colors.white24),
           ),
-        ),
-        const SizedBox(width: 10),
-        Expanded(
-          child: Container(
-            height: 166,
-            decoration: BoxDecoration(
-              border: Border.all(color: colors.line),
-              color: colors.surface,
-            ),
-            child: Stack(
-              children: [
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(10),
-                    child: Text(
-                      'SAFE CINEWORKFLOW CURATION',
-                      style: TextStyle(
-                        color: colors.ink,
-                        fontSize: 14,
-                        height: 1.2,
-                        fontWeight: FontWeight.w800,
-                        letterSpacing: 0.4,
-                      ),
-                    ),
-                  ),
-                ),
-                Positioned(
-                  left: 8,
-                  bottom: 8,
-                  child: Text(
-                    'K. ARIUS',
-                    style: TextStyle(
-                      color: colors.ink,
-                      letterSpacing: 1.2,
-                      fontSize: 9,
-                    ),
-                  ),
-                ),
-                Positioned(
-                  right: 8,
-                  bottom: 8,
-                  child: Container(width: 7, height: 7, color: colors.ink),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
+        );
+      },
     );
   }
 }

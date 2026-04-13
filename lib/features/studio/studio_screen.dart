@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 import '../../app/theme.dart';
-import '../../core/widgets/app_top_bar.dart';
+import '../../core/widgets/app_fab.dart';
 
 class StudioScreen extends StatelessWidget {
   const StudioScreen({super.key});
@@ -8,577 +10,194 @@ class StudioScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).extension<AppColors>()!;
+    
     return ColoredBox(
       color: colors.bg,
-      child: CustomScrollView(
-        slivers: [
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(12, 10, 12, 24),
-            sliver: SliverList(
-              delegate: SliverChildListDelegate([
-                const AppTopBar(),
-                const SizedBox(height: 22),
-                const _HeaderBlock(),
-                const SizedBox(height: 16),
-                _Frame(
-                  height: 344,
-                  child: const _HeroAbstract(),
-                ),
-                const SizedBox(height: 14),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _Frame(height: 166, child: const _PortraitTile()),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: _Frame(height: 166, child: const _MountainTile()),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 14),
-                _Frame(
-                  height: 342,
-                  child: const _RecentEditTile(),
-                ),
-                const SizedBox(height: 14),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _Frame(height: 168, child: const _RoadTile()),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: _Frame(height: 168, child: const _WaveTile()),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 14),
-                Row(
-                  children: [
-                    Expanded(
-                      child: _Frame(height: 168, child: const _ForestTile()),
-                    ),
-                    const SizedBox(width: 14),
-                    Expanded(
-                      child: Stack(
-                        clipBehavior: Clip.none,
-                        children: [
-                          _Frame(height: 168, child: const _MinimalTile()),
-                          Positioned(
-                            right: -2,
-                            bottom: -2,
-                            child: Container(
-                              width: 64,
-                              height: 64,
-                              decoration: BoxDecoration(
-                                color: colors.ink,
-                                border: Border.all(color: colors.line),
-                              ),
-                              child: Icon(
-                                Icons.add,
-                                color: colors.bg,
-                                size: 34,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ]),
+      child: SafeArea(
+        child: Stack(
+          children: [
+            CustomScrollView(
+              slivers: [
+                _buildAppBar(context, colors),
+                _buildHeader(colors),
+                _buildGrid(colors),
+                // Padding at bottom for FAB
+                const SliverToBoxAdapter(child: SizedBox(height: 100)),
+              ],
             ),
+            Positioned(
+              bottom: 16,
+              right: 16,
+              child: const AppFab(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAppBar(BuildContext context, AppColors colors) {
+    return SliverAppBar(
+      automaticallyImplyLeading: false,
+      backgroundColor: colors.bg,
+      pinned: true,
+      elevation: 0,
+      titleSpacing: 0,
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          IconButton(
+            onPressed: () => Scaffold.of(context).openDrawer(),
+            icon: Icon(Icons.menu, color: colors.ink),
+          ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                height: 32,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFD166), // MVP yellow from mockup
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                alignment: Alignment.center,
+                child: const Icon(Icons.diamond, color: Colors.black, size: 16),
+              ),
+              const SizedBox(width: 8),
+              IconButton(
+                onPressed: () {},
+                icon: Icon(Icons.view_quilt_outlined, color: colors.ink),
+              ),
+              IconButton(
+                onPressed: () {},
+                icon: Icon(Icons.lens_outlined, color: colors.ink),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
-}
 
-
-
-class _HeaderBlock extends StatelessWidget {
-  const _HeaderBlock();
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColors>()!;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'PRIVATE',
-          style: TextStyle(
-            color: colors.muted,
-            letterSpacing: 2.6,
-            fontSize: 10,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        const SizedBox(height: 2),
-        Text(
-          'LIBRARY',
-          style: TextStyle(
-            color: colors.muted,
-            letterSpacing: 2.6,
-            fontSize: 10,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text(
-              'STUDIO',
-              style: TextStyle(
-                color: colors.ink,
-                fontSize: 56,
-                height: 0.92,
-                letterSpacing: -1.6,
-                fontWeight: FontWeight.w900,
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: [
-                    const _HeaderTab(label: 'All', selected: true),
-                    _spacer(),
-                    const _HeaderTab(label: 'Images'),
-                    _spacer(),
-                    const _HeaderTab(label: 'Collections'),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
-
-  Widget _spacer() => const SizedBox(width: 26);
-}
-
-class _HeaderTab extends StatelessWidget {
-  const _HeaderTab({required this.label, this.selected = false});
-
-  final String label;
-  final bool selected;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColors>()!;
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          label,
-          style: TextStyle(
-            color: selected ? colors.ink : colors.muted,
-            letterSpacing: 0.5,
-            fontSize: 15,
-          ),
-        ),
-        const SizedBox(height: 4),
-        AnimatedContainer(
-          duration: const Duration(milliseconds: 180),
-          width: selected ? 22 : 0,
-          height: 2,
-          color: selected ? colors.ink : Colors.transparent,
-        ),
-      ],
-    );
-  }
-}
-
-class _Frame extends StatelessWidget {
-  const _Frame({required this.height, required this.child});
-
-  final double height;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColors>()!;
-    return Container(
-      height: height,
-      decoration: BoxDecoration(
-        color: colors.surface,
-        border: Border.all(color: colors.line),
-      ),
-      child: child,
-    );
-  }
-}
-
-class _HeroAbstract extends StatelessWidget {
-  const _HeroAbstract();
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Positioned.fill(
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: RadialGradient(
-                center: const Alignment(-0.35, -0.2),
-                radius: 1.1,
-                colors: [
-                  const Color(0xFF1D2027),
-                  Colors.black.withValues(alpha: 0.96),
-                ],
-              ),
-            ),
-          ),
-        ),
-        Positioned(
-          left: 0,
-          right: 0,
-          bottom: 24,
-          child: Container(
-            height: 30,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                colors: [
-                  Colors.white.withValues(alpha: 0.0),
-                  Colors.white.withValues(alpha: 0.82),
-                  Colors.white.withValues(alpha: 0.0),
-                ],
-              ),
-            ),
-          ),
-        ),
-        Positioned(
-          right: 54,
-          bottom: 20,
-          child: Transform.rotate(
-            angle: 0.18,
-            child: Container(
-              width: 96,
-              height: 236,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    Colors.white.withValues(alpha: 0.78),
-                    Colors.white.withValues(alpha: 0.16),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-        Positioned(
-          right: 26,
-          bottom: 20,
-          child: Container(
-            width: 68,
-            height: 200,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.white.withValues(alpha: 0.72),
-                  Colors.white.withValues(alpha: 0.2),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _PortraitTile extends StatelessWidget {
-  const _PortraitTile();
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Positioned.fill(
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: RadialGradient(
-                center: const Alignment(-0.2, -0.3),
-                radius: 1.15,
-                colors: [
-                  const Color(0xFF31353D),
-                  Colors.black.withValues(alpha: 0.96),
-                ],
-              ),
-            ),
-          ),
-        ),
-        Positioned(
-          left: 24,
-          bottom: 0,
-          child: Container(
-            width: 96,
-            height: 152,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.white.withValues(alpha: 0.36),
-                  Colors.white.withValues(alpha: 0.0),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _MountainTile extends StatelessWidget {
-  const _MountainTile();
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        const Positioned.fill(
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xFF2A2D34), Color(0xFF090A0D)],
-              ),
-            ),
-          ),
-        ),
-        ...List.generate(
-          5,
-          (index) => Positioned(
-            left: 12 + (index * 20),
-            right: 12 + (index * 8),
-            bottom: 12 + (index * 18),
-            child: Container(
-              height: 26,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.07 + (index * 0.05)),
-                borderRadius: BorderRadius.circular(80),
-              ),
-            ),
-          ),
-        ),
-        Positioned(
-          left: 84,
-          bottom: 52,
-          child: Container(
-            width: 36,
-            height: 56,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.white.withValues(alpha: 0.75),
-                  Colors.white.withValues(alpha: 0.14),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _RecentEditTile extends StatelessWidget {
-  const _RecentEditTile();
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = Theme.of(context).extension<AppColors>()!;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Colors.white.withValues(alpha: 0.13),
-              Colors.white.withValues(alpha: 0.08),
-            ],
-          ),
-        ),
+  Widget _buildHeader(AppColors colors) {
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Icon(Icons.settings, size: 36, color: colors.ink),
-            ),
-            const Spacer(),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(12, 0, 12, 6),
-              child: Text(
-                'RECENT EDIT',
-                style: TextStyle(
-                  color: colors.muted,
-                  letterSpacing: 2,
-                  fontSize: 11,
-                ),
+            Text(
+              'สตูดิโอ',
+              style: TextStyle(
+                color: colors.ink,
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                height: 1.2,
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(12, 0, 12, 14),
-              child: Text(
-                'NOIR_SERIES_01',
-                style: TextStyle(
-                  color: colors.ink,
-                  fontWeight: FontWeight.w900,
-                  fontSize: 36,
-                  height: 0.95,
-                  letterSpacing: -1.1,
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: colors.ink),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    'Sort and filter',
+                    style: TextStyle(
+                      color: colors.ink,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
           ],
         ),
       ),
     );
   }
-}
 
-class _RoadTile extends StatelessWidget {
-  const _RoadTile();
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        const Positioned.fill(
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xFF494C53), Color(0xFF111216)],
-              ),
-            ),
-          ),
-        ),
-        Positioned(
-          left: 0,
-          right: 0,
-          bottom: 16,
-          child: Container(height: 2, color: Colors.white.withValues(alpha: 0.6)),
-        ),
-        Positioned(
-          left: 0,
-          right: 0,
-          bottom: 84,
-          child: Container(height: 1, color: Colors.white.withValues(alpha: 0.28)),
-        ),
-      ],
-    );
-  }
-}
-
-class _WaveTile extends StatelessWidget {
-  const _WaveTile();
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        const Positioned.fill(
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [Color(0xFF20232A), Color(0xFF08090C)],
-              ),
-            ),
-          ),
-        ),
-        ...List.generate(
-          7,
-          (index) => Positioned(
-            left: -30 + (index * 24),
-            right: -20 + (index * 6),
-            bottom: 26 + (index * 8),
-            child: Container(
-              height: 16,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(60),
-                color: Colors.white.withValues(alpha: 0.05 + (index * 0.03)),
-              ),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _ForestTile extends StatelessWidget {
-  const _ForestTile();
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        const Positioned.fill(
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Color(0xFF2A2D32), Color(0xFF0B0C10)],
-              ),
-            ),
-          ),
-        ),
-        ...List.generate(
-          9,
-          (index) => Positioned(
-            left: 10 + (index * 18),
-            top: -10,
-            bottom: 0,
-            child: Container(
-              width: 4,
-              color: Colors.white.withValues(alpha: 0.09 + (index.isEven ? 0.04 : 0)),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _MinimalTile extends StatelessWidget {
-  const _MinimalTile();
-
-  @override
-  Widget build(BuildContext context) {
-    return const DecoratedBox(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [Color(0xFFA1A3A8), Color(0xFF363940)],
-        ),
+  Widget _buildGrid(AppColors colors) {
+    return SliverGrid(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        mainAxisSpacing: 2,
+        crossAxisSpacing: 2,
       ),
+      delegate: SliverChildBuilderDelegate(
+        (context, index) {
+          // Mock data: first item loaded at index 3, rest are loading spinners to match screenshot.
+          final isLoaded = index == 3;
+          return _StudioGridItem(
+            isLoaded: isLoaded,
+            seed: isLoaded ? 'studio_$index' : null,
+          );
+        },
+        childCount: 18,
+      ),
+    );
+  }
+}
+
+class _StudioGridItem extends StatelessWidget {
+  final bool isLoaded;
+  final String? seed;
+
+  const _StudioGridItem({required this.isLoaded, this.seed});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: const Color(0xFF1F1F1F),
+      child: isLoaded
+          ? Stack(
+              fit: StackFit.expand,
+              children: [
+                Image.network(
+                  'https://picsum.photos/seed/${seed.hashCode}/400/400',
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Center(child: Icon(Icons.error, color: Colors.white24));
+                  },
+                ),
+                // Gradient overlay at bottom
+                Positioned(
+                  left: 0,
+                  bottom: 0,
+                  right: 0,
+                  child: Container(
+                    padding: const EdgeInsets.fromLTRB(4, 16, 4, 4),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter,
+                        colors: [
+                          Colors.black.withValues(alpha: 0.8),
+                          Colors.transparent,
+                        ],
+                      ),
+                    ),
+                    child: const Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.tune, color: Colors.white, size: 14),
+                        SizedBox(width: 4),
+                        Icon(Icons.save_alt, color: Colors.white, size: 14),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            )
+          : const Center(
+              child: CupertinoActivityIndicator(
+                radius: 12,
+              ),
+            ),
     );
   }
 }

@@ -18,21 +18,6 @@ class AppTopBar extends StatelessWidget {
             visualDensity: VisualDensity.compact,
           ),
           const SizedBox(width: 8),
-          Text(
-            'FILMEDME',
-            style: TextStyle(
-              color: colors.ink,
-              fontSize: 18,
-              fontWeight: FontWeight.w900,
-              letterSpacing: -0.5,
-            ),
-          ),
-          const Spacer(),
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.settings, color: colors.ink, size: 20),
-            visualDensity: VisualDensity.compact,
-          ),
         ],
       ),
     );

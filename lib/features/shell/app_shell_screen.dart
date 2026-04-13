@@ -5,24 +5,38 @@ class AppShellDestination {
     required this.label,
     required this.icon,
     required this.screen,
+    this.activeIcon,
   });
 
   final String label;
   final IconData icon;
+  final IconData? activeIcon;
   final Widget screen;
 }
 
 class AppShellScreen extends StatefulWidget {
-  const AppShellScreen({super.key, required this.destinations});
+  const AppShellScreen({
+    super.key,
+    required this.destinations,
+    this.initialIndex = 1,
+  });
 
   final List<AppShellDestination> destinations;
+  final int initialIndex;
 
   @override
   State<AppShellScreen> createState() => _AppShellScreenState();
 }
 
 class _AppShellScreenState extends State<AppShellScreen> {
-  int _currentIndex = 0;
+  late int _currentIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    final maxIndex = widget.destinations.isEmpty ? 0 : widget.destinations.length - 1;
+    _currentIndex = widget.initialIndex.clamp(0, maxIndex);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,40 +52,36 @@ class _AppShellScreenState extends State<AppShellScreen> {
       bottomNavigationBar: SafeArea(
         top: false,
         child: Container(
+          padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
           decoration: const BoxDecoration(
-            color: Color(0xFF111216),
+            gradient: LinearGradient(
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+              colors: [Color(0xFF17191F), Color(0xFF2C2F36), Color(0xFF17191F)],
+            ),
             border: Border(
               top: BorderSide(color: Color(0xFF1F2127)),
             ),
           ),
-          child: NavigationBarTheme(
-            data: NavigationBarThemeData(
-              backgroundColor: const Color(0xFF111216),
-              indicatorColor: Colors.white.withValues(alpha: 0.1),
-              labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
-              iconTheme: WidgetStateProperty.resolveWith((states) {
-                return IconThemeData(
-                  color: states.contains(WidgetState.selected)
-                      ? const Color(0xFFF2F2F4)
-                      : const Color(0xFF747A84),
-                );
-              }),
-            ),
-            child: NavigationBar(
-              height: 62,
-              selectedIndex: _currentIndex,
-              destinations: widget.destinations
-                  .map(
-                    (item) => NavigationDestination(
-                      icon: Icon(item.icon, size: 20),
-                      label: item.label,
-                    ),
-                  )
-                  .toList(),
-              onDestinationSelected: (index) {
-                setState(() => _currentIndex = index);
-              },
-            ),
+          child: BottomNavigationBar(
+            currentIndex: _currentIndex,
+            onTap: (index) => setState(() => _currentIndex = index),
+            type: BottomNavigationBarType.fixed,
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            selectedItemColor: const Color(0xFFF3F3F5),
+            unselectedItemColor: const Color(0xFFA2A6AE),
+            selectedLabelStyle: const TextStyle(fontSize: 11),
+            unselectedLabelStyle: const TextStyle(fontSize: 11),
+            items: widget.destinations
+                .map(
+                  (item) => BottomNavigationBarItem(
+                    icon: Icon(item.icon, size: 18),
+                    activeIcon: Icon(item.activeIcon ?? item.icon, size: 18),
+                    label: item.label,
+                  ),
+                )
+                .toList(),
           ),
         ),
       ),

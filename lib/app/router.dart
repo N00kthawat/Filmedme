@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
+import '../features/ai_lab/ai_lab_screen.dart';
 import '../features/auth/login_screen.dart';
 import '../features/auth/models/auth_session.dart';
 import '../features/auth/services/auth_session_store.dart';
+import '../features/feed/feed_screen.dart';
 import '../features/home/home_screen.dart';
-import '../features/presets/presets_screen.dart';
 import '../features/profile/profile_screen.dart';
 import '../features/shell/app_shell_screen.dart';
+import '../features/spaces/spaces_screen.dart';
 import '../features/studio/studio_screen.dart';
 
 class AppRouter extends StatefulWidget {
@@ -65,26 +67,43 @@ class _AppRouterState extends State<AppRouter> {
     }
 
     return AppShellScreen(
+      initialIndex: 1,
       destinations: [
         const AppShellDestination(
-          label: 'Studio',
-          icon: Icons.grid_view_rounded,
-          screen: StudioScreen(),
+          label: 'Feed',
+          icon: Icons.home_outlined,
+          activeIcon: Icons.home_filled,
+          screen: FeedScreen(),
         ),
         AppShellDestination(
-          label: 'Home',
-          icon: Icons.filter_none_rounded,
+          label: 'Discover',
+          icon: Icons.search_rounded,
+          activeIcon: Icons.search,
           screen: HomeScreen(onLogout: _logout),
         ),
         const AppShellDestination(
-          label: 'Create',
-          icon: Icons.add_photo_alternate_outlined,
-          screen: PresetsScreen(),
+          label: 'Studio',
+          icon: Icons.crop_square_rounded,
+          activeIcon: Icons.crop_square,
+          screen: StudioScreen(),
+        ),
+        const AppShellDestination(
+          label: 'AI Lab',
+          icon: Icons.auto_awesome_outlined,
+          activeIcon: Icons.auto_awesome,
+          screen: AiLabScreen(),
         ),
         const AppShellDestination(
           label: 'Profile',
-          icon: Icons.person_rounded,
+          icon: Icons.sentiment_satisfied_alt_outlined,
+          activeIcon: Icons.sentiment_satisfied_alt,
           screen: ProfileScreen(),
+        ),
+        const AppShellDestination(
+          label: 'Spaces',
+          icon: Icons.dashboard_outlined,
+          activeIcon: Icons.dashboard,
+          screen: SpacesScreen(),
         ),
       ],
     );

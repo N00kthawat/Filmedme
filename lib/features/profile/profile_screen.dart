@@ -1,18 +1,15 @@
 import 'package:flutter/material.dart';
+import '../../app/theme.dart';
+import '../../core/widgets/app_top_bar.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
-  static const _bg = Color(0xFF08090C);
-  static const _surface = Color(0xFF111318);
-  static const _line = Color(0xFF23262D);
-  static const _ink = Color(0xFFF1F2F4);
-  static const _muted = Color(0xFFA2A6AE);
-
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).extension<AppColors>()!;
     return ColoredBox(
-      color: _bg,
+      color: colors.bg,
       child: SafeArea(
         child: CustomScrollView(
           slivers: [
@@ -20,7 +17,7 @@ class ProfileScreen extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(12, 10, 12, 42),
               sliver: SliverList(
                 delegate: SliverChildListDelegate([
-                  const _TopBar(),
+                  const AppTopBar(),
                   const SizedBox(height: 14),
                   const _ProfileHero(),
                   const SizedBox(height: 22),
@@ -47,46 +44,14 @@ class ProfileScreen extends StatelessWidget {
   }
 }
 
-class _TopBar extends StatelessWidget {
-  const _TopBar();
 
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 42,
-      child: Row(
-        children: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.menu, color: ProfileScreen._ink, size: 18),
-            visualDensity: VisualDensity.compact,
-          ),
-          const Text(
-            'FILMEDME',
-            style: TextStyle(
-              color: ProfileScreen._ink,
-              fontSize: 20,
-              fontWeight: FontWeight.w900,
-              letterSpacing: -0.5,
-            ),
-          ),
-          const Spacer(),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.settings, color: ProfileScreen._ink, size: 18),
-            visualDensity: VisualDensity.compact,
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 class _ProfileHero extends StatelessWidget {
   const _ProfileHero();
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).extension<AppColors>()!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -98,48 +63,48 @@ class _ProfileHero extends StatelessWidget {
               height: 76,
               decoration: BoxDecoration(
                 color: const Color(0xFF2F3239),
-                border: Border.all(color: ProfileScreen._line),
+                border: Border.all(color: colors.line),
               ),
-              child: const Icon(Icons.person, color: ProfileScreen._ink, size: 44),
+              child: Icon(Icons.person, color: colors.ink, size: 44),
             ),
             const SizedBox(width: 12),
-            const Expanded(
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'ELIAS VANCE',
                     style: TextStyle(
-                      color: ProfileScreen._ink,
+                      color: colors.ink,
                       fontSize: 37,
                       height: 0.9,
                       fontWeight: FontWeight.w900,
                       letterSpacing: -1.1,
                     ),
                   ),
-                  SizedBox(height: 5),
+                  const SizedBox(height: 5),
                   Text(
                     'ARCHIVIST OF THE EUROPEAN EDITORIAL',
                     style: TextStyle(
-                      color: ProfileScreen._muted,
+                      color: colors.muted,
                       letterSpacing: 1.3,
                       fontSize: 8.5,
                     ),
                   ),
-                  SizedBox(height: 2),
+                  const SizedBox(height: 2),
                   Text(
                     'FRAMES. CINEMATOGRAPHIC. STILL',
                     style: TextStyle(
-                      color: ProfileScreen._muted,
+                      color: colors.muted,
                       letterSpacing: 1.3,
                       fontSize: 8.5,
                     ),
                   ),
-                  SizedBox(height: 2),
+                  const SizedBox(height: 2),
                   Text(
                     'COLLECTIONS SINCE 2017, BERLIN',
                     style: TextStyle(
-                      color: ProfileScreen._muted,
+                      color: colors.muted,
                       letterSpacing: 1.3,
                       fontSize: 8.5,
                     ),
@@ -165,8 +130,8 @@ class _ProfileHero extends StatelessWidget {
                 height: 44,
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: ProfileScreen._ink,
-                    foregroundColor: ProfileScreen._bg,
+                    backgroundColor: colors.ink,
+                    foregroundColor: colors.bg,
                     shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
                     elevation: 0,
                   ),
@@ -188,8 +153,8 @@ class _ProfileHero extends StatelessWidget {
               height: 44,
               child: OutlinedButton(
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: ProfileScreen._ink,
-                  side: const BorderSide(color: ProfileScreen._line),
+                  foregroundColor: colors.ink,
+                  side: BorderSide(color: colors.line),
                   shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
                   padding: EdgeInsets.zero,
                 ),
@@ -212,12 +177,13 @@ class _StatBlock extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).extension<AppColors>()!;
     return Row(
       children: [
         Text(
           value,
-          style: const TextStyle(
-            color: ProfileScreen._ink,
+          style: TextStyle(
+            color: colors.ink,
             fontSize: 26,
             height: 0.95,
             letterSpacing: -0.4,
@@ -229,8 +195,8 @@ class _StatBlock extends StatelessWidget {
           padding: const EdgeInsets.only(top: 8),
           child: Text(
             label.toUpperCase(),
-            style: const TextStyle(
-              color: ProfileScreen._muted,
+            style: TextStyle(
+              color: colors.muted,
               letterSpacing: 1.2,
               fontSize: 8.5,
             ),
@@ -249,12 +215,13 @@ class _SectionTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).extension<AppColors>()!;
     return Row(
       children: [
         Text(
           title,
-          style: const TextStyle(
-            color: ProfileScreen._muted,
+          style: TextStyle(
+            color: colors.muted,
             letterSpacing: 2.2,
             fontSize: 10,
           ),
@@ -262,8 +229,8 @@ class _SectionTitle extends StatelessWidget {
         const Spacer(),
         Text(
           trailing,
-          style: const TextStyle(
-            color: ProfileScreen._muted,
+          style: TextStyle(
+            color: colors.muted,
             letterSpacing: 1.4,
             fontSize: 8.5,
           ),
@@ -369,11 +336,12 @@ class _Frame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).extension<AppColors>()!;
     return Container(
       height: height,
       decoration: BoxDecoration(
-        color: ProfileScreen._surface,
-        border: Border.all(color: ProfileScreen._line),
+        color: colors.surface,
+        border: Border.all(color: colors.line),
       ),
       child: child,
     );
@@ -528,6 +496,7 @@ class _HallwayTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).extension<AppColors>()!;
     return Stack(
       children: [
         const Positioned.fill(
@@ -553,8 +522,8 @@ class _HallwayTile extends StatelessWidget {
           bottom: 20,
           child: Container(height: 2, color: Colors.white.withValues(alpha: 0.24)),
         ),
-        const Center(
-          child: Icon(Icons.person, color: ProfileScreen._ink, size: 24),
+        Center(
+          child: Icon(Icons.person, color: colors.ink, size: 24),
         ),
       ],
     );
@@ -640,12 +609,13 @@ class _MetricRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).extension<AppColors>()!;
     return Row(
       children: [
         Text(
           label,
-          style: const TextStyle(
-            color: ProfileScreen._muted,
+          style: TextStyle(
+            color: colors.muted,
             letterSpacing: 1.5,
             fontSize: 9,
           ),
@@ -653,8 +623,8 @@ class _MetricRow extends StatelessWidget {
         const Spacer(),
         Text(
           value,
-          style: const TextStyle(
-            color: ProfileScreen._ink,
+          style: TextStyle(
+            color: colors.ink,
             fontSize: 13,
             fontWeight: FontWeight.w700,
           ),
@@ -669,25 +639,26 @@ class _QuotePanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).extension<AppColors>()!;
     return Container(
       padding: const EdgeInsets.fromLTRB(10, 10, 10, 12),
       decoration: BoxDecoration(
-        color: ProfileScreen._surface,
-        border: Border.all(color: ProfileScreen._line),
+        color: colors.surface,
+        border: Border.all(color: colors.line),
       ),
-      child: const Column(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             'FAVORITE CINE QUOTE',
             style: TextStyle(
-              color: ProfileScreen._muted,
+              color: colors.muted,
               letterSpacing: 1.6,
               fontSize: 9,
             ),
           ),
-          SizedBox(height: 8),
-          Wrap(
+          const SizedBox(height: 8),
+          const Wrap(
             spacing: 6,
             runSpacing: 6,
             children: [
@@ -698,11 +669,11 @@ class _QuotePanel extends StatelessWidget {
               _Tag(text: 'MONOCHROME'),
             ],
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Text(
             '"The camera is an instrument that teaches people how to see without a camera."',
             style: TextStyle(
-              color: ProfileScreen._ink,
+              color: colors.ink,
               fontStyle: FontStyle.italic,
               fontSize: 11.5,
               height: 1.4,
@@ -721,15 +692,16 @@ class _Tag extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).extension<AppColors>()!;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
       decoration: BoxDecoration(
-        border: Border.all(color: ProfileScreen._line),
+        border: Border.all(color: colors.line),
       ),
       child: Text(
         text,
-        style: const TextStyle(
-          color: ProfileScreen._muted,
+        style: TextStyle(
+          color: colors.muted,
           letterSpacing: 1.1,
           fontSize: 8.5,
         ),

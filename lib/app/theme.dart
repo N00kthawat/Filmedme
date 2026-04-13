@@ -1,108 +1,92 @@
 import 'package:flutter/material.dart';
 
-ThemeData buildFilmedmeTheme() {
-  const sand = Color(0xFFE8D9C6);
-  const ink = Color(0xFF161412);
-  const charcoal = Color(0xFF24211E);
-  const fog = Color(0xFFF6F1E9);
-  const muted = Color(0xFF8A8178);
-  const line = Color(0xFFD4C8BB);
+class AppColors extends ThemeExtension<AppColors> {
+  final Color bg;
+  final Color surface;
+  final Color line;
+  final Color ink;
+  final Color muted;
 
-  final scheme = ColorScheme.fromSeed(
-    seedColor: sand,
-    brightness: Brightness.light,
-    primary: ink,
-    secondary: sand,
-    surface: fog,
+  const AppColors({
+    required this.bg,
+    required this.surface,
+    required this.line,
+    required this.ink,
+    required this.muted,
+  });
+
+  @override
+  AppColors copyWith({
+    Color? bg,
+    Color? surface,
+    Color? line,
+    Color? ink,
+    Color? muted,
+  }) {
+    return AppColors(
+      bg: bg ?? this.bg,
+      surface: surface ?? this.surface,
+      line: line ?? this.line,
+      ink: ink ?? this.ink,
+      muted: muted ?? this.muted,
+    );
+  }
+
+  @override
+  AppColors lerp(ThemeExtension<AppColors>? other, double t) {
+    if (other is! AppColors) {
+      return this;
+    }
+    return AppColors(
+      bg: Color.lerp(bg, other.bg, t)!,
+      surface: Color.lerp(surface, other.surface, t)!,
+      line: Color.lerp(line, other.line, t)!,
+      ink: Color.lerp(ink, other.ink, t)!,
+      muted: Color.lerp(muted, other.muted, t)!,
+    );
+  }
+}
+
+ThemeData buildFilmedmeTheme(Brightness brightness) {
+  final isDark = brightness == Brightness.dark;
+
+  // Modern Light Theme
+  const lightBg = Color(0xFFF9F9FB);
+  const lightSurface = Color(0xFFFFFFFF);
+  const lightLine = Color(0xFFE5E7EB);
+  const lightInk = Color(0xFF111827);
+  const lightMuted = Color(0xFF6B7280);
+
+  // Modern Dark Theme (Existing App Dark Style)
+  const darkBg = Color(0xFF07080B);
+  const darkSurface = Color(0xFF101216);
+  const darkLine = Color(0xFF23262D);
+  const darkInk = Color(0xFFF3F3F5);
+  const darkMuted = Color(0xFFA0A4AD);
+
+  final appColors = AppColors(
+    bg: isDark ? darkBg : lightBg,
+    surface: isDark ? darkSurface : lightSurface,
+    line: isDark ? darkLine : lightLine,
+    ink: isDark ? darkInk : lightInk,
+    muted: isDark ? darkMuted : lightMuted,
   );
 
   return ThemeData(
     useMaterial3: true,
-    colorScheme: scheme.copyWith(
-      surface: fog,
-      onSurface: ink,
-      outline: line,
-      secondaryContainer: sand.withValues(alpha: 0.55),
-    ),
-    scaffoldBackgroundColor: fog,
-    textTheme: const TextTheme(
-      displaySmall: TextStyle(
-        fontSize: 36,
-        height: 1.02,
-        fontWeight: FontWeight.w700,
-        color: ink,
-      ),
-      headlineMedium: TextStyle(
-        fontSize: 28,
-        height: 1.1,
-        fontWeight: FontWeight.w700,
-        color: ink,
-      ),
-      titleLarge: TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.w700,
-        color: ink,
-      ),
-      titleMedium: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w600,
-        color: ink,
-      ),
-      bodyLarge: TextStyle(fontSize: 15, height: 1.5, color: charcoal),
-      bodyMedium: TextStyle(fontSize: 13, height: 1.45, color: muted),
-      labelLarge: TextStyle(
-        fontSize: 14,
-        fontWeight: FontWeight.w600,
-        color: ink,
-      ),
-    ),
-    appBarTheme: const AppBarTheme(
+    brightness: brightness,
+    scaffoldBackgroundColor: appColors.bg,
+    extensions: [appColors],
+    appBarTheme: AppBarTheme(
       backgroundColor: Colors.transparent,
       elevation: 0,
-      foregroundColor: ink,
+      foregroundColor: appColors.ink,
       surfaceTintColor: Colors.transparent,
-      titleTextStyle: TextStyle(
-        fontSize: 16,
-        fontWeight: FontWeight.w700,
-        color: ink,
-      ),
     ),
-    cardTheme: CardThemeData(
-      margin: EdgeInsets.zero,
-      color: Colors.white.withValues(alpha: 0.72),
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(28),
-        side: const BorderSide(color: line),
-      ),
-    ),
-    dividerTheme: const DividerThemeData(color: line, thickness: 1, space: 1),
-    chipTheme: ChipThemeData(
-      backgroundColor: Colors.white,
-      selectedColor: ink,
-      disabledColor: sand.withValues(alpha: 0.35),
-      labelStyle: const TextStyle(fontWeight: FontWeight.w600, color: ink),
-      secondaryLabelStyle: const TextStyle(
-        fontWeight: FontWeight.w600,
-        color: Colors.white,
-      ),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(18),
-        side: const BorderSide(color: line),
-      ),
-    ),
-    navigationBarTheme: NavigationBarThemeData(
-      backgroundColor: Colors.white.withValues(alpha: 0.82),
-      indicatorColor: sand,
-      labelTextStyle: WidgetStateProperty.resolveWith(
-        (states) => TextStyle(
-          fontSize: 12,
-          fontWeight: states.contains(WidgetState.selected)
-              ? FontWeight.w700
-              : FontWeight.w500,
-          color: ink,
-        ),
-      ),
+    dividerTheme: DividerThemeData(color: appColors.line, thickness: 1, space: 1),
+    textTheme: TextTheme(
+      bodyLarge: TextStyle(color: appColors.ink),
+      bodyMedium: TextStyle(color: appColors.muted),
     ),
   );
 }

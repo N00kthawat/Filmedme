@@ -1,25 +1,22 @@
 import 'package:flutter/material.dart';
+import '../../app/theme.dart';
+import '../../core/widgets/app_top_bar.dart';
 
 class StudioScreen extends StatelessWidget {
   const StudioScreen({super.key});
 
-  static const _bg = Color(0xFF08090C);
-  static const _surface = Color(0xFF111318);
-  static const _line = Color(0xFF23262D);
-  static const _ink = Color(0xFFF1F2F4);
-  static const _muted = Color(0xFFA2A6AE);
-
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).extension<AppColors>()!;
     return ColoredBox(
-      color: _bg,
+      color: colors.bg,
       child: CustomScrollView(
         slivers: [
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(12, 10, 12, 24),
             sliver: SliverList(
               delegate: SliverChildListDelegate([
-                const _TopBar(),
+                const AppTopBar(),
                 const SizedBox(height: 22),
                 const _HeaderBlock(),
                 const SizedBox(height: 16),
@@ -75,12 +72,12 @@ class StudioScreen extends StatelessWidget {
                               width: 64,
                               height: 64,
                               decoration: BoxDecoration(
-                                color: _ink,
-                                border: Border.all(color: _line),
+                                color: colors.ink,
+                                border: Border.all(color: colors.line),
                               ),
-                              child: const Icon(
+                              child: Icon(
                                 Icons.add,
-                                color: _bg,
+                                color: colors.bg,
                                 size: 34,
                               ),
                             ),
@@ -99,63 +96,31 @@ class StudioScreen extends StatelessWidget {
   }
 }
 
-class _TopBar extends StatelessWidget {
-  const _TopBar();
 
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 42,
-      child: Row(
-        children: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.menu, color: StudioScreen._ink, size: 18),
-            visualDensity: VisualDensity.compact,
-          ),
-          const Text(
-            'FILMEDME',
-            style: TextStyle(
-              color: StudioScreen._ink,
-              fontSize: 20,
-              fontWeight: FontWeight.w900,
-              letterSpacing: -0.5,
-            ),
-          ),
-          const Spacer(),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.settings, color: StudioScreen._ink, size: 18),
-            visualDensity: VisualDensity.compact,
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 class _HeaderBlock extends StatelessWidget {
   const _HeaderBlock();
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).extension<AppColors>()!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'PRIVATE',
           style: TextStyle(
-            color: StudioScreen._muted,
+            color: colors.muted,
             letterSpacing: 2.6,
             fontSize: 10,
             fontWeight: FontWeight.w500,
           ),
         ),
         const SizedBox(height: 2),
-        const Text(
+        Text(
           'LIBRARY',
           style: TextStyle(
-            color: StudioScreen._muted,
+            color: colors.muted,
             letterSpacing: 2.6,
             fontSize: 10,
             fontWeight: FontWeight.w500,
@@ -165,10 +130,10 @@ class _HeaderBlock extends StatelessWidget {
         Row(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            const Text(
+            Text(
               'STUDIO',
               style: TextStyle(
-                color: StudioScreen._ink,
+                color: colors.ink,
                 fontSize: 56,
                 height: 0.92,
                 letterSpacing: -1.6,
@@ -207,13 +172,14 @@ class _HeaderTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).extension<AppColors>()!;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           label,
           style: TextStyle(
-            color: selected ? StudioScreen._ink : StudioScreen._muted,
+            color: selected ? colors.ink : colors.muted,
             letterSpacing: 0.5,
             fontSize: 15,
           ),
@@ -223,7 +189,7 @@ class _HeaderTab extends StatelessWidget {
           duration: const Duration(milliseconds: 180),
           width: selected ? 22 : 0,
           height: 2,
-          color: selected ? StudioScreen._ink : Colors.transparent,
+          color: selected ? colors.ink : Colors.transparent,
         ),
       ],
     );
@@ -238,11 +204,12 @@ class _Frame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).extension<AppColors>()!;
     return Container(
       height: height,
       decoration: BoxDecoration(
-        color: StudioScreen._surface,
-        border: Border.all(color: StudioScreen._line),
+        color: colors.surface,
+        border: Border.all(color: colors.line),
       ),
       child: child,
     );
@@ -438,6 +405,7 @@ class _RecentEditTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).extension<AppColors>()!;
     return Padding(
       padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
       child: DecoratedBox(
@@ -454,28 +422,28 @@ class _RecentEditTile extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Padding(
-              padding: EdgeInsets.all(12),
-              child: Icon(Icons.settings, size: 36, color: StudioScreen._ink),
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Icon(Icons.settings, size: 36, color: colors.ink),
             ),
             const Spacer(),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(12, 0, 12, 6),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 0, 12, 6),
               child: Text(
                 'RECENT EDIT',
                 style: TextStyle(
-                  color: StudioScreen._muted,
+                  color: colors.muted,
                   letterSpacing: 2,
                   fontSize: 11,
                 ),
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(12, 0, 12, 14),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 0, 12, 14),
               child: Text(
                 'NOIR_SERIES_01',
                 style: TextStyle(
-                  color: StudioScreen._ink,
+                  color: colors.ink,
                   fontWeight: FontWeight.w900,
                   fontSize: 36,
                   height: 0.95,

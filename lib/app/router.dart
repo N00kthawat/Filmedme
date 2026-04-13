@@ -68,6 +68,7 @@ class _AppRouterState extends State<AppRouter> {
 
     return AppShellScreen(
       initialIndex: 1,
+      onLogout: _logout,
       destinations: [
         const AppShellDestination(
           label: 'Feed',
@@ -75,11 +76,11 @@ class _AppRouterState extends State<AppRouter> {
           activeIcon: Icons.home_filled,
           screen: FeedScreen(),
         ),
-        AppShellDestination(
+        const AppShellDestination(
           label: 'Discover',
           icon: Icons.search_rounded,
           activeIcon: Icons.search,
-          screen: HomeScreen(onLogout: _logout),
+          screen: HomeScreen(),
         ),
         const AppShellDestination(
           label: 'Studio',

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../app/theme.dart';
+import 'app_drawer.dart';
+
 class AppShellDestination {
   const AppShellDestination({
     required this.label,
@@ -19,10 +22,12 @@ class AppShellScreen extends StatefulWidget {
     super.key,
     required this.destinations,
     this.initialIndex = 1,
+    this.onLogout,
   });
 
   final List<AppShellDestination> destinations;
   final int initialIndex;
+  final Future<void> Function()? onLogout;
 
   @override
   State<AppShellScreen> createState() => _AppShellScreenState();
@@ -40,8 +45,10 @@ class _AppShellScreenState extends State<AppShellScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).extension<AppColors>()!;
     return Scaffold(
-      backgroundColor: const Color(0xFF08090C),
+      backgroundColor: colors.bg,
+      drawer: AppDrawer(onLogout: widget.onLogout),
       body: SafeArea(
         bottom: false,
         child: IndexedStack(
@@ -53,14 +60,10 @@ class _AppShellScreenState extends State<AppShellScreen> {
         top: false,
         child: Container(
           padding: const EdgeInsets.fromLTRB(8, 8, 8, 8),
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: [Color(0xFF17191F), Color(0xFF2C2F36), Color(0xFF17191F)],
-            ),
+          decoration: BoxDecoration(
+            color: colors.surface,
             border: Border(
-              top: BorderSide(color: Color(0xFF1F2127)),
+              top: BorderSide(color: colors.line),
             ),
           ),
           child: BottomNavigationBar(
@@ -69,8 +72,8 @@ class _AppShellScreenState extends State<AppShellScreen> {
             type: BottomNavigationBarType.fixed,
             backgroundColor: Colors.transparent,
             elevation: 0,
-            selectedItemColor: const Color(0xFFF3F3F5),
-            unselectedItemColor: const Color(0xFFA2A6AE),
+            selectedItemColor: colors.ink,
+            unselectedItemColor: colors.muted,
             selectedLabelStyle: const TextStyle(fontSize: 11),
             unselectedLabelStyle: const TextStyle(fontSize: 11),
             items: widget.destinations

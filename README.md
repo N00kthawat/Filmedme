@@ -1,16 +1,30 @@
-# filmedme
+# Filmedme
 
-A new Flutter project.
+Filmedme is a Flutter mobile app scaffold inspired by VSCO workflows:
 
-## Getting Started
+- film-like presets and recipes
+- private studio drafts before publish
+- clear separation between frontend modules and backend domains
 
-This project is a starting point for a Flutter application.
+## Frontend
 
-A few resources to get you started if this is your first Flutter project:
+Flutter app lives in `lib/` and follows a feature-first structure:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- `app/` app shell, theme, routing
+- `core/` shared widgets and models
+- `features/` discover, studio, editor, presets, navigation shell
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Backend
+
+Backend is separated into another project folder:
+
+- `/Users/nookthawat/Project/filmedme-backend`
+
+That repo contains all Supabase schema, seed scripts, and edge functions.
+
+## Flutter quick run
+
+```bash
+flutter pub get
+flutter run
+```

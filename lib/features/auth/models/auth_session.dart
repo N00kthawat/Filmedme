@@ -1,3 +1,11 @@
+// =============================================================================
+// AuthSession — โมเดลข้อมูล Session ของผู้ใช้หลังจาก Login สำเร็จ
+//
+// เก็บข้อมูลที่ได้จาก backend แล้วนำไปใช้ทั่วทั้งแอป เช่น:
+//   - token: ใช้แนบใน HTTP Header เพื่อเรียก API ที่ต้องการสิทธิ์
+//   - userId, email, handle, displayName: ข้อมูลโปรไฟล์พื้นฐาน
+// =============================================================================
+
 class AuthSession {
   const AuthSession({
     required this.token,
@@ -7,59 +15,73 @@ class AuthSession {
     required this.displayName,
   });
 
+  /// JWT Token — แนบใน Authorization Header ทุกครั้งที่เรียก API
   final String token;
   final String userId;
   final String email;
   final String handle;
   final String displayName;
 
-  Map<String, dynamic> toJson() {
-    return {
-      'token': token,
-      'userId': userId,
-      'email': email,
-      'handle': handle,
-      'displayName': displayName,
-    };
-  }
+  // ---------------------------------------------------------------------------
+  // Serialization — แปลงเป็น JSON เพื่อบันทึกลง SharedPreferences
+  // ---------------------------------------------------------------------------
 
+  Map<String, dynamic> toJson() => {
+        'token': token,
+        'userId': userId,
+        'email': email,
+        'handle': handle,
+        'displayName': displayName,
+      };
+
+  /// อ่าน Session กลับจาก JSON ที่เก็บไว้ใน SharedPreferences
   factory AuthSession.fromJson(Map<String, dynamic> json) {
     return AuthSession(
-      token: _readString(json['token']),
-      userId: _readString(json['userId']),
-      email: _readString(json['email']),
-      handle: _readString(json['handle']),
-      displayName: _readString(json['displayName']),
+      token: _str(json['token']),
+      userId: _str(json['userId']),
+      email: _str(json['email']),
+      handle: _str(json['handle']),
+      displayName: _str(json['displayName']),
     );
   }
 
+  /// แปลง Response จาก API /auth/login และ /auth/register
+  ///
+  /// Backend คืน JSON รูปแบบนี้:
+  /// ```json
+  /// {
+  ///   "token": "eyJ...",
+  ///   "user":    { "id": "...", "email": "..." },
+  ///   "profile": { "handle": "...", "displayName": "..." }
+  /// }
+  /// ```
   factory AuthSession.fromLoginPayload(Map<String, dynamic> json) {
-    final user = _readMap(json['user']);
-    final profile = _readMap(json['profile']);
+    final user    = _map(json['user']);    
+    final profile = _map(json['profile']);
 
     return AuthSession(
-      token: _readString(json['token']),
-      userId: _readString(user['id']),
-      email: _readString(user['email']),
-      handle: _readString(profile['handle']),
-      displayName: _readString(profile['displayName']),
+      token:       _str(json['token']),
+      userId:      _str(user['id']),
+      email:       _str(user['email']),
+      handle:      _str(profile['handle']),
+      displayName: _str(profile['displayName']),
     );
   }
 
-  static String _readString(dynamic value) {
-    if (value is String && value.trim().isNotEmpty) {
-      return value.trim();
-    }
-    throw const FormatException('Invalid auth payload');
+  // ---------------------------------------------------------------------------
+  // Private helpers
+  // ---------------------------------------------------------------------------
+
+  /// ดึง String จาก JSON — ถ้าค่าว่างหรือผิดรูปแบบจะ throw ทันที
+  static String _str(dynamic value) {
+    if (value is String && value.trim().isNotEmpty) return value.trim();
+    throw const FormatException('Invalid auth payload: expected non-empty string');
   }
 
-  static Map<String, dynamic> _readMap(dynamic value) {
-    if (value is Map<String, dynamic>) {
-      return value;
-    }
-    if (value is Map) {
-      return value.map((key, item) => MapEntry('$key', item));
-    }
-    return const <String, dynamic>{};
+  /// ดึง Map จาก JSON — ถ้าไม่ใช่ Map คืน empty map แทน
+  static Map<String, dynamic> _map(dynamic value) {
+    if (value is Map<String, dynamic>) return value;
+    if (value is Map) return value.map((k, v) => MapEntry('$k', v));
+    return const {};
   }
 }

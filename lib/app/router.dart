@@ -5,7 +5,7 @@ import '../features/auth/login_screen.dart';
 import '../features/auth/models/auth_session.dart';
 import '../features/auth/services/auth_session_store.dart';
 import '../features/feed/feed_screen.dart';
-import '../features/home/home_screen.dart';
+import '../features/discover/discover_screen.dart';
 import '../features/profile/profile_screen.dart';
 import '../features/shell/app_shell_screen.dart';
 import '../features/spaces/spaces_screen.dart';
@@ -80,7 +80,7 @@ class _AppRouterState extends State<AppRouter> {
           label: 'Discover',
           icon: Icons.search_rounded,
           activeIcon: Icons.search,
-          screen: HomeScreen(),
+          screen: DiscoverScreen(),
         ),
         const AppShellDestination(
           label: 'Studio',

@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import '../../app/theme.dart';
 import '../../core/widgets/app_fab.dart';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+class DiscoverScreen extends StatelessWidget {
+  const DiscoverScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

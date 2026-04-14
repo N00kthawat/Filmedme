@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../app/theme.dart';
 import '../../core/config/app_env.dart';
 import 'models/auth_session.dart';
 import 'services/auth_service.dart';
@@ -16,12 +17,6 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  static const _bg = Color(0xFF07080B);
-  static const _line = Color(0xFF2A2D34);
-  static const _ink = Color(0xFFF1F1F3);
-  static const _muted = Color(0xFFAAAAB0);
-  static const _hint = Color(0xFF383C43);
-
   final _loginFormKey = GlobalKey<FormState>();
   final _signupFormKey = GlobalKey<FormState>();
   final _loginEmailController = TextEditingController();
@@ -47,15 +42,11 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _submitLogin() async {
-    if (!_loginFormKey.currentState!.validate()) {
-      return;
-    }
-
+    if (!_loginFormKey.currentState!.validate()) return;
     setState(() {
       _isSubmitting = true;
       _errorMessage = null;
     });
-
     try {
       final session = await _authService.login(
         email: _loginEmailController.text,
@@ -73,22 +64,16 @@ class _LoginScreenState extends State<LoginScreen> {
             'Cannot connect to backend (${AppEnv.apiBaseUrl}). Please start API first.';
       });
     } finally {
-      if (mounted) {
-        setState(() => _isSubmitting = false);
-      }
+      if (mounted) setState(() => _isSubmitting = false);
     }
   }
 
   Future<void> _submitSignUp() async {
-    if (!_signupFormKey.currentState!.validate()) {
-      return;
-    }
-
+    if (!_signupFormKey.currentState!.validate()) return;
     setState(() {
       _isSubmitting = true;
       _errorMessage = null;
     });
-
     try {
       final session = await _authService.register(
         handle: _signupHandleController.text,
@@ -107,9 +92,7 @@ class _LoginScreenState extends State<LoginScreen> {
             'Cannot connect to backend (${AppEnv.apiBaseUrl}). Please start API first.';
       });
     } finally {
-      if (mounted) {
-        setState(() => _isSubmitting = false);
-      }
+      if (mounted) setState(() => _isSubmitting = false);
     }
   }
 
@@ -128,17 +111,14 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  TextStyle get _monoLabel => const TextStyle(
-    color: _muted,
-    letterSpacing: 2.2,
-    fontSize: 13,
-    fontWeight: FontWeight.w500,
-  );
-
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).extension<AppColors>()!;
+    // hint color: slightly between bg and line for placeholder feel
+    final hintColor = Color.lerp(colors.bg, colors.line, 0.8)!;
+
     return Scaffold(
-      backgroundColor: _bg,
+      backgroundColor: colors.bg,
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.fromLTRB(22, 18, 22, 28),
@@ -148,8 +128,8 @@ class _LoginScreenState extends State<LoginScreen> {
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 220),
                 child: _mode == _AuthMode.login
-                    ? _buildLoginLayout()
-                    : _buildSignupLayout(),
+                    ? _buildLoginLayout(colors, hintColor)
+                    : _buildSignupLayout(colors, hintColor),
               ),
             ),
           ),
@@ -158,7 +138,14 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildLoginLayout() {
+  TextStyle _monoLabel(AppColors colors) => TextStyle(
+    color: colors.muted,
+    letterSpacing: 2.2,
+    fontSize: 13,
+    fontWeight: FontWeight.w500,
+  );
+
+  Widget _buildLoginLayout(AppColors colors, Color hintColor) {
     return Column(
       key: const ValueKey('login'),
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -167,8 +154,8 @@ class _LoginScreenState extends State<LoginScreen> {
           children: [
             Text(
               'FILMEDME',
-              style: const TextStyle(
-                color: _ink,
+              style: TextStyle(
+                color: colors.ink,
                 fontSize: 46,
                 fontWeight: FontWeight.w900,
                 letterSpacing: -1.2,
@@ -178,22 +165,22 @@ class _LoginScreenState extends State<LoginScreen> {
             const Spacer(),
             IconButton(
               onPressed: () => _showComingSoon('Menu'),
-              icon: const Icon(Icons.menu_rounded, color: _ink),
+              icon: Icon(Icons.menu_rounded, color: colors.ink),
             ),
             IconButton(
               onPressed: () => _showComingSoon('Settings'),
-              icon: const Icon(Icons.settings, color: _ink),
+              icon: Icon(Icons.settings, color: colors.ink),
             ),
           ],
         ),
         const SizedBox(height: 52),
-        const FittedBox(
+        FittedBox(
           fit: BoxFit.scaleDown,
           alignment: Alignment.centerLeft,
           child: Text(
             'FILMEDME',
             style: TextStyle(
-              color: _ink,
+              color: colors.ink,
               fontSize: 74,
               fontWeight: FontWeight.w900,
               letterSpacing: -2.4,
@@ -202,7 +189,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
         const SizedBox(height: 12),
-        Text('THE MONOCHROMATIC LENS / ACCESS PORTAL', style: _monoLabel),
+        Text('THE MONOCHROMATIC LENS / ACCESS PORTAL', style: _monoLabel(colors)),
         const SizedBox(height: 46),
         Form(
           key: _loginFormKey,
@@ -214,6 +201,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 hint: 'user@monochrome.com',
                 controller: _loginEmailController,
                 keyboardType: TextInputType.emailAddress,
+                colors: colors,
+                hintColor: hintColor,
                 validator: (value) {
                   final text = value?.trim() ?? '';
                   if (text.isEmpty) return 'Please enter email';
@@ -227,6 +216,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 hint: '••••••••',
                 controller: _loginPasswordController,
                 obscureText: true,
+                colors: colors,
+                hintColor: hintColor,
                 validator: (value) {
                   final text = value ?? '';
                   if (text.length < 8) return 'Password must be at least 8 characters';
@@ -245,31 +236,28 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ],
         const SizedBox(height: 28),
-        _buildPrimaryButton(
-          label: 'SIGN IN',
-          onPressed: _isSubmitting ? null : _submitLogin,
-        ),
+        _buildPrimaryButton(label: 'SIGN IN', onPressed: _isSubmitting ? null : _submitLogin, colors: colors),
         const SizedBox(height: 34),
-        _buildSectionDivider('IDENTITY VERIFICATION'),
+        _buildSectionDivider('IDENTITY VERIFICATION', colors),
         const SizedBox(height: 20),
-        _buildLoginProviders(),
+        _buildLoginProviders(colors),
         const SizedBox(height: 52),
         Center(
           child: Wrap(
             spacing: 8,
             children: [
-              Text("DON'T HAVE AN ACCOUNT?", style: _monoLabel),
+              Text("DON'T HAVE AN ACCOUNT?", style: _monoLabel(colors)),
               GestureDetector(
                 onTap: () => _switchMode(_AuthMode.signUp),
-                child: const Text(
+                child: Text(
                   'SIGN UP',
                   style: TextStyle(
-                    color: _ink,
+                    color: colors.ink,
                     letterSpacing: 2,
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
                     decoration: TextDecoration.underline,
-                    decorationColor: _ink,
+                    decorationColor: colors.ink,
                   ),
                 ),
               ),
@@ -280,15 +268,15 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildSignupLayout() {
+  Widget _buildSignupLayout(AppColors colors, Color hintColor) {
     return Column(
       key: const ValueKey('signup'),
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           'FILMEDME',
-          style: const TextStyle(
-            color: _ink,
+          style: TextStyle(
+            color: colors.ink,
             fontSize: 46,
             fontWeight: FontWeight.w900,
             letterSpacing: -1.2,
@@ -296,13 +284,13 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
         const SizedBox(height: 56),
-        const FittedBox(
+        FittedBox(
           fit: BoxFit.scaleDown,
           alignment: Alignment.centerLeft,
           child: Text(
             'JOIN THE ARCHIVE',
             style: TextStyle(
-              color: _ink,
+              color: colors.ink,
               fontSize: 64,
               fontWeight: FontWeight.w900,
               letterSpacing: -2,
@@ -311,7 +299,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ),
         const SizedBox(height: 12),
-        Text('V2.0 REGISTRATION // INTERNAL ACCESS', style: _monoLabel),
+        Text('V2.0 REGISTRATION // INTERNAL ACCESS', style: _monoLabel(colors)),
         const SizedBox(height: 44),
         Form(
           key: _signupFormKey,
@@ -321,6 +309,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 label: 'USERNAME',
                 hint: 'IDENTITY_REF',
                 controller: _signupHandleController,
+                colors: colors,
+                hintColor: hintColor,
                 validator: (value) {
                   final text = value?.trim() ?? '';
                   final valid = RegExp(r'^[a-zA-Z0-9_]{3,24}$').hasMatch(text);
@@ -334,6 +324,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 hint: 'COMM_CHANNEL@NODE.COM',
                 controller: _signupEmailController,
                 keyboardType: TextInputType.emailAddress,
+                colors: colors,
+                hintColor: hintColor,
                 validator: (value) {
                   final text = value?.trim() ?? '';
                   if (text.isEmpty) return 'Please enter email';
@@ -347,6 +339,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 hint: '••••••••••',
                 controller: _signupPasswordController,
                 obscureText: true,
+                colors: colors,
+                hintColor: hintColor,
                 validator: (value) {
                   final text = value ?? '';
                   if (text.length < 8) return 'Password must be at least 8 characters';
@@ -365,50 +359,39 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ],
         const SizedBox(height: 28),
-        _buildPrimaryButton(
-          label: 'CREATE ACCOUNT',
-          onPressed: _isSubmitting ? null : _submitSignUp,
-        ),
+        _buildPrimaryButton(label: 'CREATE ACCOUNT', onPressed: _isSubmitting ? null : _submitSignUp, colors: colors),
         const SizedBox(height: 34),
-        _buildSectionDivider('EXTERNAL AUTH PROTOCOLS'),
+        _buildSectionDivider('EXTERNAL AUTH PROTOCOLS', colors),
         const SizedBox(height: 20),
         Row(
           children: [
-            Expanded(
-              child: _buildSquareProvider('IG', () => _showComingSoon('Instagram')),
-            ),
+            Expanded(child: _buildSquareProvider('IG', () => _showComingSoon('Instagram'), colors)),
             const SizedBox(width: 12),
-            Expanded(
-              child: _buildSquareProvider('FB', () => _showComingSoon('Facebook')),
-            ),
+            Expanded(child: _buildSquareProvider('FB', () => _showComingSoon('Facebook'), colors)),
           ],
         ),
         const SizedBox(height: 12),
         Row(
           children: [
-            Expanded(
-              child: _buildSquareProvider('GOOG', () => _showComingSoon('Google')),
-            ),
+            Expanded(child: _buildSquareProvider('GOOG', () => _showComingSoon('Google'), colors)),
             const SizedBox(width: 12),
-            Expanded(
-              child: _buildSquareProvider('MSFT', () => _showComingSoon('Microsoft')),
-            ),
+            Expanded(child: _buildSquareProvider('MSFT', () => _showComingSoon('Microsoft'), colors)),
           ],
         ),
         const SizedBox(height: 36),
-        const Divider(color: _line),
+        Divider(color: colors.line),
         const SizedBox(height: 20),
         Center(
           child: Wrap(
             spacing: 8,
             children: [
-              Text('ALREADY HAVE AN ACCOUNT?', style: _monoLabel),
+              Text('ALREADY HAVE AN ACCOUNT?', style: _monoLabel(colors)),
               GestureDetector(
                 onTap: () => _switchMode(_AuthMode.login),
-                child: const Text(
+                child: Text(
                   'LOG IN',
                   style: TextStyle(
-                    color: _ink,
+                    color: colors.ink,
                     letterSpacing: 2,
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
@@ -427,6 +410,8 @@ class _LoginScreenState extends State<LoginScreen> {
     required String hint,
     required TextEditingController controller,
     required String? Function(String?) validator,
+    required AppColors colors,
+    required Color hintColor,
     TextInputType? keyboardType,
     bool obscureText = false,
     void Function(String)? onSubmitted,
@@ -434,18 +419,18 @@ class _LoginScreenState extends State<LoginScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: _monoLabel),
+        Text(label, style: _monoLabel(colors)),
         const SizedBox(height: 12),
         TextFormField(
           controller: controller,
-          style: const TextStyle(color: _ink, fontSize: 20),
+          style: TextStyle(color: colors.ink, fontSize: 20),
           keyboardType: keyboardType,
           obscureText: obscureText,
           validator: validator,
           onFieldSubmitted: onSubmitted,
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: const TextStyle(color: _hint, fontSize: 20),
+            hintStyle: TextStyle(color: hintColor, fontSize: 20),
             contentPadding: EdgeInsets.zero,
             border: InputBorder.none,
             focusedBorder: InputBorder.none,
@@ -462,6 +447,8 @@ class _LoginScreenState extends State<LoginScreen> {
     required String hint,
     required TextEditingController controller,
     required String? Function(String?) validator,
+    required AppColors colors,
+    required Color hintColor,
     TextInputType? keyboardType,
     bool obscureText = false,
     void Function(String)? onSubmitted,
@@ -469,43 +456,37 @@ class _LoginScreenState extends State<LoginScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: _monoLabel),
+        Text(label, style: _monoLabel(colors)),
         const SizedBox(height: 8),
         TextFormField(
           controller: controller,
-          style: const TextStyle(color: _ink, fontSize: 20),
+          style: TextStyle(color: colors.ink, fontSize: 20),
           keyboardType: keyboardType,
           obscureText: obscureText,
           validator: validator,
           onFieldSubmitted: onSubmitted,
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             hintText: '',
-            contentPadding: EdgeInsets.only(bottom: 10),
-            hintStyle: TextStyle(color: _hint, fontSize: 20),
+            contentPadding: const EdgeInsets.only(bottom: 10),
+            hintStyle: TextStyle(color: hintColor, fontSize: 20),
             enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: _line, width: 1.5),
+              borderSide: BorderSide(color: colors.line, width: 1.5),
             ),
             focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: _ink, width: 1.5),
+              borderSide: BorderSide(color: colors.ink, width: 1.5),
             ),
-            errorBorder: UnderlineInputBorder(
+            errorBorder: const UnderlineInputBorder(
               borderSide: BorderSide(color: Color(0xFFFF7E7E), width: 1.5),
             ),
-            focusedErrorBorder: UnderlineInputBorder(
+            focusedErrorBorder: const UnderlineInputBorder(
               borderSide: BorderSide(color: Color(0xFFFF7E7E), width: 1.5),
             ),
-            errorStyle: TextStyle(color: Color(0xFFFF7E7E)),
+            errorStyle: const TextStyle(color: Color(0xFFFF7E7E)),
           ),
         ),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: Text(
-              hint,
-              style: const TextStyle(color: _hint, fontSize: 16),
-            ),
-          ),
+        Padding(
+          padding: const EdgeInsets.only(top: 8),
+          child: Text(hint, style: TextStyle(color: hintColor, fontSize: 16)),
         ),
       ],
     );
@@ -514,14 +495,15 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _buildPrimaryButton({
     required String label,
     required VoidCallback? onPressed,
+    required AppColors colors,
   }) {
     return SizedBox(
       width: double.infinity,
       height: 62,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: _ink,
-          foregroundColor: _bg,
+          backgroundColor: colors.ink,
+          foregroundColor: colors.bg,
           shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
           textStyle: const TextStyle(
             fontSize: 14,
@@ -531,30 +513,30 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         onPressed: onPressed,
         child: _isSubmitting
-            ? const SizedBox(
+            ? SizedBox(
                 width: 20,
                 height: 20,
-                child: CircularProgressIndicator(strokeWidth: 2, color: _bg),
+                child: CircularProgressIndicator(strokeWidth: 2, color: colors.bg),
               )
             : Text(label),
       ),
     );
   }
 
-  Widget _buildSectionDivider(String label) {
+  Widget _buildSectionDivider(String label, AppColors colors) {
     return Row(
       children: [
-        const Expanded(child: Divider(color: _line)),
+        Expanded(child: Divider(color: colors.line)),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: Text(label, style: _monoLabel.copyWith(fontSize: 12)),
+          child: Text(label, style: _monoLabel(colors).copyWith(fontSize: 12)),
         ),
-        const Expanded(child: Divider(color: _line)),
+        Expanded(child: Divider(color: colors.line)),
       ],
     );
   }
 
-  Widget _buildLoginProviders() {
+  Widget _buildLoginProviders(AppColors colors) {
     return Stack(
       children: [
         Positioned.fill(
@@ -564,7 +546,7 @@ class _LoginScreenState extends State<LoginScreen> {
               style: TextStyle(
                 fontSize: 240,
                 fontWeight: FontWeight.w900,
-                color: Colors.white.withValues(alpha: 0.05),
+                color: colors.ink.withValues(alpha: 0.05),
                 height: 0.8,
               ),
             ),
@@ -572,29 +554,13 @@ class _LoginScreenState extends State<LoginScreen> {
         ),
         Column(
           children: [
-            _buildProviderRow(
-              label: 'CONTINUE WITH INSTAGRAM',
-              icon: Icons.camera_alt_outlined,
-              onTap: () => _showComingSoon('Instagram'),
-            ),
+            _buildProviderRow(label: 'CONTINUE WITH INSTAGRAM', icon: Icons.camera_alt_outlined, onTap: () => _showComingSoon('Instagram'), colors: colors),
             const SizedBox(height: 10),
-            _buildProviderRow(
-              label: 'CONTINUE WITH FACEBOOK',
-              icon: Icons.groups_2_outlined,
-              onTap: () => _showComingSoon('Facebook'),
-            ),
+            _buildProviderRow(label: 'CONTINUE WITH FACEBOOK', icon: Icons.groups_2_outlined, onTap: () => _showComingSoon('Facebook'), colors: colors),
             const SizedBox(height: 10),
-            _buildProviderRow(
-              label: 'CONTINUE WITH GOOGLE',
-              icon: Icons.search,
-              onTap: () => _showComingSoon('Google'),
-            ),
+            _buildProviderRow(label: 'CONTINUE WITH GOOGLE', icon: Icons.search, onTap: () => _showComingSoon('Google'), colors: colors),
             const SizedBox(height: 10),
-            _buildProviderRow(
-              label: 'CONTINUE WITH MICROSOFT',
-              icon: Icons.grid_view_rounded,
-              onTap: () => _showComingSoon('Microsoft'),
-            ),
+            _buildProviderRow(label: 'CONTINUE WITH MICROSOFT', icon: Icons.grid_view_rounded, onTap: () => _showComingSoon('Microsoft'), colors: colors),
           ],
         ),
       ],
@@ -605,6 +571,7 @@ class _LoginScreenState extends State<LoginScreen> {
     required String label,
     required IconData icon,
     required VoidCallback onTap,
+    required AppColors colors,
   }) {
     return Material(
       color: Colors.transparent,
@@ -614,17 +581,14 @@ class _LoginScreenState extends State<LoginScreen> {
           height: 70,
           padding: const EdgeInsets.symmetric(horizontal: 16),
           decoration: BoxDecoration(
-            border: Border.all(color: _line),
+            border: Border.all(color: colors.line),
           ),
           child: Row(
             children: [
               Expanded(
-                child: Text(
-                  label,
-                  style: _monoLabel.copyWith(color: _ink, fontSize: 12),
-                ),
+                child: Text(label, style: _monoLabel(colors).copyWith(color: colors.ink, fontSize: 12)),
               ),
-              Icon(icon, color: _ink),
+              Icon(icon, color: colors.ink),
             ],
           ),
         ),
@@ -632,7 +596,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildSquareProvider(String label, VoidCallback onTap) {
+  Widget _buildSquareProvider(String label, VoidCallback onTap, AppColors colors) {
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -641,12 +605,12 @@ class _LoginScreenState extends State<LoginScreen> {
           height: 74,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            border: Border.all(color: _line),
+            border: Border.all(color: colors.line),
           ),
           child: Text(
             label,
-            style: const TextStyle(
-              color: _ink,
+            style: TextStyle(
+              color: colors.ink,
               fontSize: 28,
               fontWeight: FontWeight.w700,
               letterSpacing: 1.5,
